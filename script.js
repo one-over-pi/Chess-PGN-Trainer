@@ -43,6 +43,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  function createBreadBoard(piece, index) {
+    let breadBoard = Array(64).fill(0);
+
+    if (piece.substring(1) === 'k') {
+        let kingSubBoard = Array(3).fill(1);
+        kingSubBoard[4] = 0;
+
+        // Extract row and column information from the index
+        let rowIndex = Math.floor(index / 8);
+        let colIndex = index % 8;
+
+        // Overlay the kingSubBoard on the breadBoard
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                let breadBoardIndex = (rowIndex + i) * 8 + colIndex + j;
+                breadBoard[breadBoardIndex] += kingSubBoard[i * 3 + j];
+            }
+        }
+    }
+
+    return breadBoard;
+}
+
+
   function handleCellClick(cell, index) {
     console.log(chessBoard[index]);
 
