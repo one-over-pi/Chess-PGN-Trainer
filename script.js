@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let chessBoard = [
+  // Initial chess board position  
+  let chessBoard = [
       'br', 'bn', 'bb', 'bq', 'bk', 'bb', 'bn', 'br',
       'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp',
       '', '', '', '', '', '', '', '',
@@ -11,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
     ];
   
     const gridContainer = document.querySelector('.grid-container');
-    let selectedCell = null; // Track the selected cell
+    // Track the selected cell
+    let selectedCell = null;
   
     function refreshBoard() {
       gridContainer.innerHTML = ''; // Clear the grid
@@ -45,18 +47,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   
     function handleCellClick(cell, index) { 
-        if (!selectedCell) {
-            if (chessBoard[index]!= '') {
-                selectedCell = index;
-                cell.classList.add('selected-cell'); // Apply red border
-            }
-            
-        } else {
+        console.log(chessBoard[index]);
+        // If selectedCell is null and the chessboard square you select is not empty:
+        if (!selectedCell && chessBoard[index]!= '') {
+            // Select the selected cell
+            selectedCell = index;
+            // Apply red highlight colour to selected cell
+            cell.classList.add('selected-cell');
+        
+        // Otherwise if you reselect the cell you previously selected
+        } else if (selectedCell == index) {
+            // Unselect cell
+            selectedCell = null;
+            // Remove highlight
+            refreshBoard();
+        
+        // Otherwise (if you have selected a cell and the next cell you selected is not the cell you previously selected)
+        } else{
+            // --------------------------------------------------
+            // Insert logic for checking move is valid chess move
+            // --------------------------------------------------
+
             // Move the piece to the target cell
             const targetCell = index;
     
             // Check if the target cell is empty or not
-            if (!chessBoard[targetCell]) {
+            if (!chessBoard[targetCell] ) {
             chessBoard[targetCell] = chessBoard[selectedCell];
             chessBoard[selectedCell] = '';
             } else {
