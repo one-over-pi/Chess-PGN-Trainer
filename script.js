@@ -11,6 +11,19 @@ document.addEventListener('DOMContentLoaded', function () {
     'wr', 'wn', 'wb', 'wq', 'wk', 'wb', 'wn', 'wr'
   ];
 
+  var slider = document.getElementById("slider");
+  let chessBoardSize = 480;
+
+  let enpassantable = false;
+  let enpassantIndex = null;
+
+  function updateSliderValue() {
+    chessBoardSize = slider.value * 9.6 + 260;
+    refreshBoard()
+  }
+
+  slider.addEventListener("input", updateSliderValue);
+
   const gridContainer = document.querySelector('.grid-container');
   let selectedCell = null;
 
@@ -21,6 +34,9 @@ document.addEventListener('DOMContentLoaded', function () {
     chessBoard.forEach((piece, index) => {
       const cell = document.createElement('div');
       cell.classList.add('cell');
+      cell.style.width = cell.style.height = `${chessBoardSize / 8}px`;
+      gridContainer.style.width = gridContainer.style.height = `${chessBoardSize}px`
+      gridContainer.style.gridTemplateColumns = gridContainer.style.gridTemplateRows = `repeat(8, ${chessBoardSize / 8}px)`;
 
       // Set cell color based on row and column
       const row = Math.floor(index / 8);
@@ -36,8 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
         image.classList.add('draggable-piece', 'piece');
         image.draggable = false;
 
-        // Set the width of the image to 80 pixels
-        image.style.width = '60px';
+        // Set the width of the image
+        image.style.width = `${chessBoardSize / 8}px`;
 
         cell.appendChild(image);
       }
@@ -90,9 +106,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function handleCellClick(cell, index) {
 
-    // TODO: Add further chess logic to check the validity of moves
-    // For example, implement rules for each chess piece type
-
     if (!selectedCell && chessBoard[index] !== '') {
       // If no cell is selected and the clicked cell is not empty, select it
       selectedCell = index;
@@ -102,6 +115,30 @@ document.addEventListener('DOMContentLoaded', function () {
       selectedCell = null;
       refreshBoard();
     } else if (selectedCell !== null) {
+      //====================================
+      // Here is where chess logic should go
+      //====================================
+
+      // Logic for en passant
+      if (enpassantable) {
+        if (index === enpassantIndex - 8 && chessBoard[selectedCell] === 'wp') {
+          chessBoard[index + 8] = '';
+        } else if (index === enpassantIndex + 8 && chessBoard[selectedCell] === 'bp') {
+          chessBoard[index - 8] = '';
+        }
+      }
+
+      // Check if pawn is just moved two squares
+      if (selectedCell >= 48 && selectedCell <= 55 && index === selectedCell - 16 && chessBoard[selectedCell] === 'wp') {
+        enpassantable = true;
+        enpassantIndex = index;
+      } else if (selectedCell >= 8 && selectedCell <= 15 && index === selectedCell + 16 && chessBoard[selectedCell] === 'bp') {
+        enpassantable = true;
+        enpassantIndex = index;
+      } else {
+        enpassantable = false;
+        enpassantIndex = null;
+      }
 
       // If a cell is already selected, move the piece to the clicked cell
       const targetCell = index;
@@ -112,5 +149,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  refreshBoard();
+  updateSliderValue(); // updateSliderValue() calls refreshBoard()
 });
