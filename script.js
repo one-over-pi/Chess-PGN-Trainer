@@ -43,32 +43,48 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  function createBreadBoard(piece, index) {
-    let breadBoard = Array(64).fill(0);
+  function createBitBoard(piece, index) {
+    let bitBoard = Array(64).fill(0);
 
     if (piece.substring(1) === 'k') {
-        let kingSubBoard = Array(3).fill(1);
-        kingSubBoard[4] = 0;
+      // Ways king can move
+      let kingBitBoard = Array(9).fill(1);
+      kingBitBoard[4] = 0;
 
-        // Extract row and column information from the index
-        let rowIndex = Math.floor(index / 8);
-        let colIndex = index % 8;
+      // Removes edge cases to overlay small bitboard on large bitboard
+      if (index <= 7) {
+        kingBitBoard[0] = kingBitBoard[1] = kingBitBoard[2] = 0;
+      } else if (index >= 56) {
+        kingBitBoard[6] = kingBitBoard[7] = kingBitBoard[8] = 0;
+      }
+      if (index % 8 === 0) {
+        kingBitBoard[0] = kingBitBoard[3] = kingBitBoard[6] = 0;
+      } else if (index % 8 === 7) {
+        kingBitBoard[2] = kingBitBoard[5] = kingBitBoard[8] = 0;
+      }
 
-        // Overlay the kingSubBoard on the breadBoard
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                let breadBoardIndex = (rowIndex + i) * 8 + colIndex + j;
-                breadBoard[breadBoardIndex] += kingSubBoard[i * 3 + j];
-            }
+      // Extract row and column information from the index
+      let rowIndex = Math.floor(index / 8);
+      let colIndex = index % 8;
+
+      // Overlay the kingBitBoard on the bitBoard
+      for (let i = 0; i < 3; i++) { // i = row
+        for (let j = 0; j < 3; j++) { // j = column
+          let bitBoardIndex = (rowIndex + i - 1) * 8 + colIndex + j - 1;
+
+          // Check if the bitBoardIndex is within valid bounds (0 to 63)
+          if (bitBoardIndex >= 0 && bitBoardIndex <= 63) {
+            bitBoard[bitBoardIndex] += kingBitBoard[i * 3 + j];
+          }
         }
+      }
     }
 
-    return breadBoard;
-}
+    return bitBoard;
+  }
 
 
   function handleCellClick(cell, index) {
-    console.log(chessBoard[index]);
 
     // TODO: Add further chess logic to check the validity of moves
     // For example, implement rules for each chess piece type
@@ -82,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
       selectedCell = null;
       refreshBoard();
     } else if (selectedCell !== null) {
+      
       // If a cell is already selected, move the piece to the clicked cell
       const targetCell = index;
       chessBoard[targetCell] = chessBoard[selectedCell];
