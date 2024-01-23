@@ -32,9 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
       // Add a chess piece image to the cell if it's not empty
       if (chessBoard[index] !== '') {
         const image = document.createElement('img');
-        image.src = `Chess Assets/${piece}.png`;
+        image.src = `Chess Assets/${piece}.svg`;
         image.classList.add('draggable-piece', 'piece');
         image.draggable = false;
+
+        // Set the width of the image to 80 pixels
+        image.style.width = '60px';
+
         cell.appendChild(image);
       }
 
@@ -98,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
       selectedCell = null;
       refreshBoard();
     } else if (selectedCell !== null) {
-      
+
       // If a cell is already selected, move the piece to the clicked cell
       const targetCell = index;
       chessBoard[targetCell] = chessBoard[selectedCell];
